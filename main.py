@@ -38,9 +38,7 @@ def extract_attributes(subject):
         "_экз": "Экзамен",
         "_зачёт": "Зачет"
     }
-    presence_map = {
-        "_ОНЛАЙН": "Онлайн"
-    }
+    presence_map = {"_ОНЛАЙН": "Онлайн"}
     subgroups_map = {
         "_1 подгруп": "Подгруппа 1",
         "1 подгруп": "Подгруппа 1",
@@ -69,28 +67,32 @@ def extract_attributes(subject):
             subject = subject.replace(subgroups_key, "")
 
     # Удаляем пробелы в начале и конце, а также любые лишние пробелы
-    subject = subject.strip().replace("  ", " ")
-
+    subject = subject.strip().replace(" ", " ")
     return subject, type_value, presence_value, subgroups_value
 
 
 # Обработка расписания
-def process_schedule(df, start_date, num_weeks):
+def process_schedule(df, start_date, week_indices):
     week_start_rows = [1, 11, 21]  # Начало каждой учебной недели
     subjects_columns = list(range(2, 14, 2))
     classroom_columns = list(range(3, 14, 2))
     data_to_insert = []
-    for week_idx in range(num_weeks):
-        current_week_start = start_date + timedelta(weeks=week_idx)
-        start_row = week_start_rows[week_idx]
-        if start_row >= len(df):
+
+    for week_idx in week_indices:
+        if week_idx - 1 >= len(week_start_rows):
             break
+
+        current_week_start = start_date + timedelta(weeks=week_idx - 1)
+        start_row = week_start_rows[week_idx - 1]
+
         for day_idx in range(6):
             date = current_week_start + timedelta(days=day_idx)
             full_date = date.strftime('%d.%m.%Y')
+
             for row in range(start_row + 1, start_row + 9):
                 if row >= len(df):
                     break
+
                 time = df.iloc[row, 1]
                 raw_subject = df.iloc[row, subjects_columns[day_idx]]
                 classroom = df.iloc[row, classroom_columns[day_idx]]
@@ -118,11 +120,15 @@ def process_teachers(df):
     header_positions = find_all_headers(df)
     if len(header_positions) < 2:
         raise ValueError("Недостаточно заголовков 'Преподаватель'.")
+
     (start_row_table1, col_table1), (start_row_table2, col_table2) = header_positions[:2]
+
     df_table1 = df.iloc[start_row_table1 + 1:, col_table1:col_table1 + 2].dropna(how='all').reset_index(drop=True)
     df_table2 = df.iloc[start_row_table2 + 1:, col_table2:col_table2 + 2].dropna(how='all').reset_index(drop=True)
+
     df_table1.columns = ["Преподаватель", "Дисциплина"]
     df_table2.columns = ["Преподаватель", "Дисциплина"]
+
     df_combined = pd.concat([df_table1, df_table2]).drop_duplicates().reset_index(drop=True)
     return df_combined
 
@@ -151,7 +157,6 @@ def map_teachers(schedule_data, teacher_data):
         "Раз_ моб_прилож": "Разработка моб_прилож",
         "Осн_инт_-технол": "Осн_интернет-технол",
         "Раз_ моб_прил": "Разработка моб_прилож",
-        "Раз_ моб_прил": "Разработка моб_прилож"
     }
 
     exception_teacher_map = {}
@@ -163,12 +168,14 @@ def map_teachers(schedule_data, teacher_data):
     for idx, entry in enumerate(schedule_data):
         subject = entry[0]
         matched_discipline = get_best_match(subject, teacher_data)
+
         if matched_discipline:
             teacher = teacher_map_by_discipline[matched_discipline]
         elif subject in exception_teacher_map:
             teacher = exception_teacher_map[subject]
         else:
             teacher = "NA"
+
         schedule_data[idx] = entry[:-4] + (teacher,) + entry[-3:]
 
 
@@ -194,6 +201,7 @@ def create_ical_file(rows, output_path, timezone_offset):
         start_time, end_time = map(convert_time_format, map(str.strip, time.split('-')))
         start_datetime = datetime.strptime(f"{date_str} {start_time}", "%d.%m.%Y %H:%M")
         end_datetime = datetime.strptime(f"{date_str} {end_time}", "%d.%m.%Y %H:%M")
+
         start_datetime = tz.localize(start_datetime)
         end_datetime = tz.localize(end_datetime)
 
@@ -203,11 +211,33 @@ def create_ical_file(rows, output_path, timezone_offset):
         event.begin = start_datetime
         event.end = end_datetime
         event.description = description
+
         calendar.events.add(event)
 
     with open(output_path, 'w') as ics_file:
         ics_file.writelines(calendar)
+
     print(f"iCalendar файл успешно создан: {output_path}")
+
+
+# Получение информации о неделях для обработки
+def get_weeks_to_process(total_weeks):
+    week_input = input(
+        f"Введите номера недель для обработки через запятую (например, 1,2) или оставьте пустым для обработки всех {total_weeks} недель: ").strip()
+
+    if not week_input:
+        return list(range(1, total_weeks + 1))  # Обработка всех недель
+
+    # Преобразуем строку с номерами недель в список чисел
+    selected_weeks = []
+    try:
+        selected_weeks = [int(week_num.strip()) for week_num in week_input.split(',') if week_num.strip().isdigit()]
+    except ValueError:
+        print("Некорректный ввод, будет обработано все расписание.")
+        return list(range(1, total_weeks + 1))
+
+    # Оставляем только те недели, которые есть в диапазоне
+    return [week for week in selected_weeks if 1 <= week <= total_weeks]
 
 
 # Основная функция программы
@@ -219,31 +249,23 @@ def main():
     start_date = datetime(year=start_year, month=start_month, day=start_day)
     num_weeks = int(input("Введите количество учебных недель: "))
 
+    # Получение списка недель для обработки
+    weeks_to_process = get_weeks_to_process(num_weeks)
+
     file_path = "out.xlsx"
     df = load_excel_file(file_path)
 
     # Подключение к SQLite
     conn = sqlite3.connect("schedule.db")
     cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS schedule (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            subject TEXT,
-            classroom TEXT,
-            time TEXT,
-            date TEXT,
-            teacher TEXT,
-            type TEXT,
-            presence TEXT,
-            subgroups TEXT
-        )
-    ''')
+    cursor.execute(
+        ''' CREATE TABLE IF NOT EXISTS schedule ( id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT, classroom TEXT, time TEXT, date TEXT, teacher TEXT, type TEXT, presence TEXT, subgroups TEXT ) ''')
 
-    schedule_data = process_schedule(df, start_date, num_weeks)
+    schedule_data = process_schedule(df, start_date, weeks_to_process)
+
     teacher_data = process_teachers(df)
     map_teachers(schedule_data, teacher_data)
     save_schedule_to_db(conn, schedule_data)
-
     teacher_data.to_sql("teachers", conn, if_exists="replace", index=False)
 
     cursor.execute("SELECT subject, classroom, time, date, teacher, type, presence, subgroups FROM schedule")
