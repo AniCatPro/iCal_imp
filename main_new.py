@@ -16,7 +16,8 @@ def load_excel_file(file_path):
 
 def save_schedule_to_db(conn, data_to_insert):
     cursor = conn.cursor()
-    cursor.executemany("INSERT INTO schedule (subject, classroom, time, date) VALUES (?, ?, ?, ?)", data_to_insert)
+    cursor.executemany("INSERT INTO schedule (subject, classroom, time, date, teacher) VALUES (?, ?, ?, ?, ?)",
+                       data_to_insert)
     conn.commit()
 
 
@@ -44,7 +45,7 @@ def process_schedule(df, start_date, num_weeks):
                 classroom = df.iloc[row, classroom_columns[day_idx]]
 
                 if pd.notna(subject) and pd.notna(time):
-                    data_to_insert.append((subject, classroom, time, full_date))
+                    data_to_insert.append((subject, classroom, time, full_date, None))  # Initially set teacher as None
     return data_to_insert
 
 
@@ -74,6 +75,49 @@ def process_teachers(df):
     return df_combined
 
 
+def map_teachers(schedule_data, teacher_data):
+    # Преобразуем данные учителей в словарь для поиска
+    teacher_map_by_prefix = {}
+    for _, row in teacher_data.iterrows():
+        discipline = row["Дисциплина"]
+        teacher = row["Преподаватель"]
+
+        # Сопоставление по первым трем буквам
+        key = discipline[:3]
+        if key not in teacher_map_by_prefix:
+            teacher_map_by_prefix[key] = teacher
+
+    # Исключения сопоставлений
+    exception_map = {
+        "Межкульт_проф_комм": "МПК_англ",
+        "Р_и_АТ_к_ПО_экз": "Разр_и_ан_треб_к_ПО",
+        "ОПД_зачёт_ОНЛАЙН": "Осн_проект_деятель",
+        "БД_1 подгруппа": "Базы данных",
+        "БД_2 подгруппа": "Базы данных"
+    }
+
+    exception_teacher_map = {}
+    for exception_key, exception_value in exception_map.items():
+        # Фильтрация и проверка, есть ли такие дисциплины
+        filtered = teacher_data[teacher_data['Дисциплина'] == exception_value]
+        if not filtered.empty:
+            # Если есть, получить преподавателя
+            exception_teacher_map[exception_key] = filtered['Преподаватель'].values[0]
+
+    # Пройти по расписанию и назначить преподавателей
+    for idx, entry in enumerate(schedule_data):
+        subject = entry[0]
+        key = subject[:3]
+
+        if key in teacher_map_by_prefix:
+            teacher = teacher_map_by_prefix[key]
+        elif subject in exception_teacher_map:
+            teacher = exception_teacher_map[subject]
+        else:
+            teacher = "Неизвестный преподаватель"
+
+        schedule_data[idx] = entry[:-1] + (teacher,)
+
 def main():
     academic_year = input("Введите учебный год (например, 2024-2025): ")
     start_date_input = input("Введите дату начала первой недели (например, 20.01): ")
@@ -96,16 +140,24 @@ def main():
         subject TEXT,
         classroom TEXT,
         time TEXT,
-        date TEXT
+        date TEXT,
+        teacher TEXT
     ) 
     ''')
 
     # Обработка и вставка данных для расписания
     schedule_data = process_schedule(df, start_date, num_weeks)
+
+    # Обработка таблицы преподавателей
+    teacher_data = process_teachers(df)
+
+    # Сопоставление преподавателей
+    map_teachers(schedule_data, teacher_data)
+
+    # Сохранение расписания с преподавателями в базу данных
     save_schedule_to_db(conn, schedule_data)
 
-    # Обработка таблицы преподавателей и экспорт в SQLite
-    teacher_data = process_teachers(df)
+    # Сохранение таблицы преподавателей в базу данных
     teacher_data.to_sql("teachers", conn, if_exists="replace", index=False)
 
     conn.close()
