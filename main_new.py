@@ -89,7 +89,7 @@ def map_teachers(schedule_data, teacher_data):
 
     # Исключения сопоставлений
     exception_map = {
-        "Межкульт_проф_комм": "МПК_англ",
+        "МПК_англ": "Межкульт_проф_комм",
         "Р_и_АТ_к_ПО_экз": "Разр_и_ан_треб_к_ПО",
         "ОПД_зачёт_ОНЛАЙН": "Осн_проект_деятель",
         "БД_1 подгруппа": "Базы данных",
@@ -114,7 +114,7 @@ def map_teachers(schedule_data, teacher_data):
         elif subject in exception_teacher_map:
             teacher = exception_teacher_map[subject]
         else:
-            teacher = "Неизвестный преподаватель"
+            teacher = "NA"
 
         schedule_data[idx] = entry[:-1] + (teacher,)
 
