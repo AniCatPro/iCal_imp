@@ -27,24 +27,23 @@ if len(header_positions) < 2:
 print(f"Таблица 1 найдена: строка {start_row_table1}, колонка {col_table1}")
 print(f"Таблица 2 найдена: строка {start_row_table2}, колонка {col_table2}")
 
-# Загружаем таблицу 1
-columns_table1 = ["Преподаватель", "Дисциплина", "Аттест"]
-df_table1 = df.iloc[start_row_table1+1:, col_table1:col_table1+3].dropna(how='all').reset_index(drop=True)
-df_table1.columns = columns_table1
+# Загружаем обе таблицы (оставляем только нужные столбцы)
+df_table1 = df.iloc[start_row_table1+1:, col_table1:col_table1+2].dropna(how='all').reset_index(drop=True)
+df_table2 = df.iloc[start_row_table2+1:, col_table2:col_table2+2].dropna(how='all').reset_index(drop=True)
 
-# Загружаем таблицу 2
-columns_table2 = ["Преподаватель", "Дисциплина", "Аттест", "Лек", "Лабы"]
-df_table2 = df.iloc[start_row_table2+1:, col_table2:col_table2+5].dropna(how='all').reset_index(drop=True)
-df_table2.columns = columns_table2
+df_table1.columns = ["Преподаватель", "Дисциплина"]
+df_table2.columns = ["Преподаватель", "Дисциплина"]
+
+# Объединяем обе таблицы и убираем дубликаты
+df_combined = pd.concat([df_table1, df_table2]).drop_duplicates().reset_index(drop=True)
 
 # Подключение к SQLite
-conn = sqlite3.connect("schedule_tb.db")
+conn = sqlite3.connect("schedule_tb1.db")
 
-# Экспорт данных
-df_table1.to_sql("table1", conn, if_exists="replace", index=False)
-df_table2.to_sql("table2", conn, if_exists="replace", index=False)
+# Экспорт объединенной таблицы
+df_combined.to_sql("schedule", conn, if_exists="replace", index=False)
 
 # Закрываем соединение
 conn.close()
 
-print("Данные успешно экспортированы в SQLite")
+print("Объединенная таблица успешно экспортирована в SQLite")
