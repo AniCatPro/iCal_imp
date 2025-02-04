@@ -22,11 +22,11 @@ def save_schedule_to_db(conn, data_to_insert):
 
 
 def process_schedule(df, start_date, num_weeks):
-    week_start_rows = [1, 11, 21]
+    week_start_rows = [1, 11, 21]  # Начало каждой учебной недели
     subjects_columns = list(range(2, 14, 2))
     classroom_columns = list(range(3, 14, 2))
-
     data_to_insert = []
+
     for week_idx in range(num_weeks):
         current_week_start = start_date + timedelta(weeks=week_idx)
         start_row = week_start_rows[week_idx]
@@ -37,15 +37,16 @@ def process_schedule(df, start_date, num_weeks):
             date = current_week_start + timedelta(days=day_idx)
             full_date = date.strftime('%d.%m.%Y')
 
-            for row in range(start_row + 2, start_row + 9):
+            # Изменить начальную строку на start_row + 1 и увеличить обрабатываемый диапазон строк
+            for row in range(start_row + 1, start_row + 9):  # Увеличили диапазон строк
                 if row >= len(df):
                     break
                 time = df.iloc[row, 1]
                 subject = df.iloc[row, subjects_columns[day_idx]]
                 classroom = df.iloc[row, classroom_columns[day_idx]]
-
                 if pd.notna(subject) and pd.notna(time):
-                    data_to_insert.append((subject, classroom, time, full_date, None))  # Initially set teacher as None
+                    data_to_insert.append((subject, classroom, time, full_date, None))  # Преподаватель по умолчанию None
+
     return data_to_insert
 
 
@@ -90,6 +91,7 @@ def map_teachers(schedule_data, teacher_data):
     # Исключения сопоставлений
     exception_map = {
         "МПК_англ": "Межкульт_проф_комм",
+        "МПК_англ_зачёт": "Межкульт_проф_комм",
         "Р_и_АТ_к_ПО_экз": "Разр_и_ан_треб_к_ПО",
         "ОПД_зачёт_ОНЛАЙН": "Осн_проект_деятель",
         "БД_1 подгруппа": "Базы данных",
