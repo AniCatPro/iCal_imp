@@ -1,6 +1,6 @@
 # Экспорт расписания Excel в Календарь (iCal)
 
-<img src="https://github.com/user-attachments/assets/20d33b30-8162-4653-b0bd-0ee846d56709" alt="image" width="650">
+<img src="https://github.com/user-attachments/assets/e8003d3a-9459-4abe-afa1-7498447e4697" alt="image" width="750">
 
 ## Функциональность
 
