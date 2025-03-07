@@ -1,3 +1,6 @@
+> [!WARNING]
+>Исключительно для заочного отделения кафедры «Программное обеспечение» ИжГТУ.
+
 # Экспорт расписания Excel в Календарь (iCal)
 
 <img src="https://github.com/user-attachments/assets/e8003d3a-9459-4abe-afa1-7498447e4697" alt="image" width="750">
