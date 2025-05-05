@@ -1,0 +1,92 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:ics.py - http://git.io/lLljaA
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Экзамен. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250515T113000Z
+LOCATION:Би14\, Очно
+DTSTART:20250515T100000Z
+SUMMARY:Теор_авт_и_форм_яз (Лугачев П.П.)
+UID:2ddf8ea5-cabc-46b8-b312-fc41fdaa8800@2ddf.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Лекция. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250516T145000Z
+LOCATION:2-422\, Очно
+DTSTART:20250516T132000Z
+SUMMARY:Прав_осн_инф_безоп (Стукалина Е.Ф.)
+UID:ac1e13f3-d781-436f-8dc0-f083a284f7ad@ac1e.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Экзамен. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250512T095000Z
+LOCATION:Би-15\, Очно
+DTSTART:20250512T082000Z
+SUMMARY:Осн_инт-техн (Русских А.Г.)
+UID:cb5e4028-435e-46ad-bc6b-dd62bbce32ec@cb5e.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Сдача курсовой работы. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250514T163000Z
+LOCATION:3-714\, Очно
+DTSTART:20250514T150000Z
+SUMMARY:Разр_моб_прил_ (Старыгин А.В.)
+UID:af6a0480-57c8-43bb-8eae-e26961f026d8@af6a.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Зачет с оценкой. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250521T060000Z
+LOCATION:7-434\, Очно
+DTSTART:20250521T043000Z
+SUMMARY:МПК_англ (Белова А.Л. )
+UID:d069b83c-1f28-427a-9d3f-2295e7b9b638@d069.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Зачет с оценкой. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250519T060000Z
+LOCATION:3-714\, Очно
+DTSTART:20250519T043000Z
+SUMMARY:Уч. практ_НИР (Леонов М.В.)
+UID:40cb692b-5e61-4681-9f5a-eeb0c78bdd7f@40cb.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Зачет с оценкой. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250520T074000Z
+LOCATION:2-420\, Очно
+DTSTART:20250520T061000Z
+SUMMARY:Пр_осн_ИБ (Стукалина Е.Ф.)
+UID:2319f83d-01da-48b4-bf25-0a73667ecf8f@2319.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Экзамен. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250513T131000Z
+LOCATION:3-12\, Очно
+DTSTART:20250513T114000Z
+SUMMARY:Опер_ системы (Аль Аккад )
+UID:4600e182-62ac-42b2-8cf0-f0ec537eea62@4600.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Сдача курсовой работы. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250514T145000Z
+LOCATION:3-714\, Очно
+DTSTART:20250514T132000Z
+SUMMARY:Базы данных_ (Старыгин А.В.)
+UID:b8f9ed0e-a039-401b-a02d-db2481a83e3d@b8f9.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Экзамен. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250515T095000Z
+LOCATION:Би14\, Очно
+DTSTART:20250515T082000Z
+SUMMARY:Теор_авт_и_форм_яз (Лугачев П.П.)
+UID:93e6c16c-2f72-41ad-9633-1e1257036484@93e6.org
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Тип пары: Лекция. Примечание: эта пара была создана автоматически. Возможны ошибки. Сверяйтесь!
+DTEND:20250516T163000Z
+LOCATION:2-422\, Очно
+DTSTART:20250516T150000Z
+SUMMARY:Прав_осн_инф_безоп (Стукалина Е.Ф.)
+UID:c293102f-d864-4311-ac3d-263d6314fef0@c293.org
+END:VEVENT
+END:VCALENDAR

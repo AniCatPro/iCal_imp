@@ -214,8 +214,8 @@ def create_ical_file(rows, output_path, timezone_offset):
 
         calendar.events.add(event)
 
-    with open(output_path, 'w') as ics_file:
-        ics_file.writelines(calendar)
+    with open(output_path, 'w', encoding='utf-8') as ics_file:
+        ics_file.write(calendar.serialize())
 
     print(f"iCalendar файл успешно создан: {output_path}")
 
